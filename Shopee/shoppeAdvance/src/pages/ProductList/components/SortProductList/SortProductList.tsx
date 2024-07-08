@@ -1,10 +1,10 @@
 import clsx from 'clsx'
-import { sortBy, order as orderConstant } from 'src/constants/product'
-import { ProductListConfig } from 'src/types/product.type'
 import { createSearchParams, Link, useNavigate } from 'react-router-dom'
+import { order as orderConstant, sortBy } from 'src/constants/product'
+import { ProductListConfig } from 'src/types/product.type'
 
-import path from 'src/constants/path'
 import omit from 'lodash/omit'
+import path from 'src/constants/path'
 import { QueryConfig } from 'src/hooks/useQueryConfig'
 
 interface Props {
@@ -37,7 +37,20 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
     })
   }
 
-  const handlePriceOrder = (orderValue: Exclude<ProductListConfig['order'], undefined>) => {
+  // const handlePriceOrder = (orderValue: Exclude<ProductListConfig['order'], undefined>) => {
+  //   navigate({
+  //     pathname: path.home,
+  //     search: createSearchParams({
+  //       ...queryConfig,
+  //       sort_by: sortBy.price,
+  //       order: orderValue
+  //     }).toString()
+  //   })
+  // }
+
+  // use currying to handlePriceOrder
+  const handlePriceOrderV2 = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const orderValue = event.target.value as Exclude<ProductListConfig['order'], undefined>
     navigate({
       pathname: path.home,
       search: createSearchParams({
@@ -47,19 +60,6 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
       }).toString()
     })
   }
-
-  // use currying to handlePriceOrder
-  // but i think look like more complex and hard to understand
-  // const handlePriceOrder = (event: React.ChangeEvent<HTMLSelectElement>) => {
-  //   navigate({
-  //     pathname: path.home,
-  //     search: createSearchParams({
-  //       ...queryConfig,
-  //       sort_by: sortBy.price,
-  //       order: event.target.value as Exclude<ProductListConfig['order'], undefined>
-  //     }).toString()
-  //   })
-  // }
 
   return (
     <div className='bg-gray-300/40 py-4 px-3'>
@@ -99,7 +99,8 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
               'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.price)
             })}
             value={order || ''}
-            onChange={(event) => handlePriceOrder(event.target.value as Exclude<ProductListConfig['order'], undefined>)}
+            onChange={handlePriceOrderV2}
+            // onChange={(event) => handlePriceOrder(event.target.value as Exclude<ProductListConfig['order'], undefined>)}
           >
             <option value='' disabled className='bg-white text-black'>
               Giá
